@@ -38,7 +38,7 @@ test.group('GCS driver | put', () => {
     assert.equal(contents.toString(), 'hello world')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('write to nested path', async (assert) => {
     const config = {
@@ -57,7 +57,7 @@ test.group('GCS driver | put', () => {
     assert.equal(contents.toString(), 'hello world')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
@@ -77,7 +77,7 @@ test.group('GCS driver | put', () => {
     assert.equal(contents.toString(), 'hi world')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('set custom content-type for the file', async (assert) => {
     const config = {
@@ -99,7 +99,7 @@ test.group('GCS driver | put', () => {
     assert.equal(metaData.contentType, 'application/json')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | putStream', (group) => {
@@ -126,7 +126,7 @@ test.group('GCS driver | putStream', (group) => {
     assert.equal(contents.toString(), 'hello stream')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('write to nested path', async (assert) => {
     const config = {
@@ -147,7 +147,7 @@ test.group('GCS driver | putStream', (group) => {
     assert.equal(contents.toString(), 'hello stream')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
@@ -169,7 +169,7 @@ test.group('GCS driver | putStream', (group) => {
     assert.equal(contents.toString(), 'hi stream')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('set custom content-type for the file', async (assert) => {
     const config = {
@@ -192,7 +192,7 @@ test.group('GCS driver | putStream', (group) => {
     assert.equal(metaData.contentType, 'application/json')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | exists', () => {
@@ -212,7 +212,7 @@ test.group('GCS driver | exists', () => {
     assert.isTrue(await driver.exists(fileName))
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test("return false when a file doesn't exists", async (assert) => {
     const config = {
@@ -226,7 +226,7 @@ test.group('GCS driver | exists', () => {
 
     const driver = new GcsDriver(config)
     assert.isFalse(await driver.exists(fileName))
-  }).timeout(6000)
+  }).timeout(0)
 
   test("return false when a file parent directory doesn't exists", async (assert) => {
     const config = {
@@ -240,7 +240,7 @@ test.group('GCS driver | exists', () => {
 
     const driver = new GcsDriver(config)
     assert.isFalse(await driver.exists(fileName))
-  }).timeout(6000)
+  }).timeout(0)
 
   test('raise exception when credentials are incorrect', async (assert) => {
     assert.plan(1)
@@ -259,7 +259,7 @@ test.group('GCS driver | exists', () => {
     } catch (error) {
       assert.match(error.original.message, /Could not load the default credentials./)
     }
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | delete', (group) => {
@@ -282,7 +282,7 @@ test.group('GCS driver | delete', (group) => {
     await driver.delete(fileName)
 
     assert.isFalse(await driver.exists(fileName))
-  }).timeout(6000)
+  }).timeout(0)
 
   test('do not error when trying to remove a non-existing file', async (assert) => {
     const config = {
@@ -297,7 +297,7 @@ test.group('GCS driver | delete', (group) => {
     const driver = new GcsDriver(config)
     await driver.delete(fileName)
     assert.isFalse(await driver.exists(fileName))
-  }).timeout(6000)
+  }).timeout(0)
 
   test("do not error when file parent directory doesn't exists", async (assert) => {
     const config = {
@@ -313,7 +313,7 @@ test.group('GCS driver | delete', (group) => {
 
     await driver.delete(fileName)
     assert.isFalse(await driver.exists(fileName))
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | copy', (group) => {
@@ -342,7 +342,7 @@ test.group('GCS driver | copy', (group) => {
 
     await driver.delete(fileName)
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('create intermediate directories when copying a file', async (assert) => {
     const config = {
@@ -365,7 +365,7 @@ test.group('GCS driver | copy', (group) => {
 
     await driver.delete(fileName)
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 
   test("return error when source doesn't exists", async (assert) => {
     assert.plan(1)
@@ -388,7 +388,7 @@ test.group('GCS driver | copy', (group) => {
         'E_CANNOT_COPY_FILE: Cannot copy file from "foo.txt" to "bar.txt"'
       )
     }
-  }).timeout(6000)
+  }).timeout(0)
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
@@ -412,7 +412,7 @@ test.group('GCS driver | copy', (group) => {
 
     await driver.delete(fileName)
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('retain source acl during copy', async (assert) => {
     const config = {
@@ -435,7 +435,7 @@ test.group('GCS driver | copy', (group) => {
 
     await driver.delete(fileName)
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('retain source content-type during copy', async (assert) => {
     const config = {
@@ -458,7 +458,7 @@ test.group('GCS driver | copy', (group) => {
 
     await driver.delete(fileName)
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | move', (group) => {
@@ -487,7 +487,7 @@ test.group('GCS driver | move', (group) => {
     assert.isFalse(await driver.exists(fileName))
 
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('create intermediate directories when moving a file', async (assert) => {
     const config = {
@@ -510,7 +510,7 @@ test.group('GCS driver | move', (group) => {
     assert.isFalse(await driver.exists(fileName))
 
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 
   test("return error when source doesn't exists", async (assert) => {
     assert.plan(1)
@@ -533,7 +533,7 @@ test.group('GCS driver | move', (group) => {
         'E_CANNOT_MOVE_FILE: Cannot move file from "foo.txt" to "baz/bar.txt"'
       )
     }
-  }).timeout(6000)
+  }).timeout(0)
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
@@ -557,7 +557,7 @@ test.group('GCS driver | move', (group) => {
     assert.equal(contents.toString(), 'hello world')
 
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('retain source acl during move', async (assert) => {
     const config = {
@@ -579,7 +579,7 @@ test.group('GCS driver | move', (group) => {
     assert.equal(visibility, 'public')
 
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('retain source content-type during move', async (assert) => {
     const config = {
@@ -601,7 +601,7 @@ test.group('GCS driver | move', (group) => {
     assert.equal(metaData.contentType, 'application/json')
 
     await driver.delete(fileName1)
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | get', (group) => {
@@ -626,7 +626,7 @@ test.group('GCS driver | get', (group) => {
     assert.equal(contents.toString(), 'hello world')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('get file contents as a stream', async (assert, done) => {
     assert.plan(1)
@@ -655,7 +655,7 @@ test.group('GCS driver | get', (group) => {
     stream.on('error', (error) => {
       done(error)
     })
-  }).timeout(6000)
+  }).timeout(0)
 
   test("return error when file doesn't exists", async (assert) => {
     assert.plan(1)
@@ -674,7 +674,7 @@ test.group('GCS driver | get', (group) => {
     } catch (error) {
       assert.equal(error.message, 'E_CANNOT_READ_FILE: Cannot read file from location "foo.txt"')
     }
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | getStats', (group) => {
@@ -700,7 +700,7 @@ test.group('GCS driver | getStats', (group) => {
     assert.instanceOf(stats.modified, Date)
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('return error when file is missing', async (assert) => {
     assert.plan(1)
@@ -724,7 +724,7 @@ test.group('GCS driver | getStats', (group) => {
         `E_CANNOT_GET_METADATA: Unable to retrieve the "stats" for file at location "${fileName}"`
       )
     }
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | getVisibility', (group) => {
@@ -749,7 +749,7 @@ test.group('GCS driver | getVisibility', (group) => {
     assert.equal(visibility, 'private')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('get visibility for public file', async (assert) => {
     const config = {
@@ -768,7 +768,7 @@ test.group('GCS driver | getVisibility', (group) => {
     assert.equal(visibility, 'public')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('return error when file is missing', async (assert) => {
     assert.plan(1)
@@ -793,7 +793,7 @@ test.group('GCS driver | getVisibility', (group) => {
         `E_CANNOT_GET_METADATA: Unable to retrieve the "visibility" for file at location "${fileName}"`
       )
     }
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | setVisibility', (group) => {
@@ -819,7 +819,7 @@ test.group('GCS driver | setVisibility', (group) => {
     assert.equal(await driver.getVisibility(fileName), 'public')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('return error when file is missing', async (assert) => {
     assert.plan(1)
@@ -843,7 +843,7 @@ test.group('GCS driver | setVisibility', (group) => {
         `E_CANNOT_SET_VISIBILITY: Unable to set visibility for file at location "${fileName}"`
       )
     }
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | getUrl', (group) => {
@@ -869,7 +869,7 @@ test.group('GCS driver | getUrl', (group) => {
     assert.equal(response.body, 'hello world')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('deny access to private files', async (assert) => {
     assert.plan(1)
@@ -895,7 +895,7 @@ test.group('GCS driver | getUrl', (group) => {
     }
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 })
 
 test.group('GCS driver | getSignedUrl', (group) => {
@@ -928,7 +928,7 @@ test.group('GCS driver | getSignedUrl', (group) => {
     assert.equal(response.body, 'hello world')
 
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 
   test('define custom content headers for the file', async (assert) => {
     const config = {
@@ -954,5 +954,5 @@ test.group('GCS driver | getSignedUrl', (group) => {
     assert.equal(response.headers['content-disposition'], 'attachment')
     assert.equal(response.body, 'hello world')
     await driver.delete(fileName)
-  }).timeout(6000)
+  }).timeout(0)
 })
