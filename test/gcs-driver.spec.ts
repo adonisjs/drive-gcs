@@ -9,25 +9,19 @@
 
 import got from 'got'
 import test from 'japa'
-import dotenv from 'dotenv'
 import { join } from 'path'
 import { Filesystem } from '@poppinss/dev-utils'
 import { string } from '@poppinss/utils/build/helpers'
 
 import { GcsDriver } from '../src/Drivers/Gcs'
-import { sign } from 'crypto'
+import { GCS_BUCKET, GCS_NO_UNIFORM_ACL_BUCKET, authenticationOptions } from '../test-helpers'
 
 const fs = new Filesystem(join(__dirname, '__app'))
-dotenv.config()
-
-const GCS_KEY_FILENAME = join(__dirname, '..', process.env.GCS_KEY_FILENAME!)
-const GCS_BUCKET = process.env.GCS_BUCKET!
-const GCS_NO_UNIFORM_ACL_BUCKET = process.env.GCS_NO_UNIFORM_ACL_BUCKET!
 
 test.group('GCS driver | put', () => {
   test('write file to the destination', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -48,7 +42,7 @@ test.group('GCS driver | put', () => {
 
   test('write to nested path', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -67,7 +61,7 @@ test.group('GCS driver | put', () => {
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -87,7 +81,7 @@ test.group('GCS driver | put', () => {
 
   test('set custom content-type for the file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -115,7 +109,7 @@ test.group('GCS driver | putStream', (group) => {
 
   test('write file to the destination', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -136,7 +130,7 @@ test.group('GCS driver | putStream', (group) => {
 
   test('write to nested path', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -157,7 +151,7 @@ test.group('GCS driver | putStream', (group) => {
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -179,7 +173,7 @@ test.group('GCS driver | putStream', (group) => {
 
   test('set custom content-type for the file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -204,7 +198,7 @@ test.group('GCS driver | putStream', (group) => {
 test.group('GCS driver | exists', () => {
   test('return true when a file exists', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -222,7 +216,7 @@ test.group('GCS driver | exists', () => {
 
   test("return false when a file doesn't exists", async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -236,7 +230,7 @@ test.group('GCS driver | exists', () => {
 
   test("return false when a file parent directory doesn't exists", async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -275,7 +269,7 @@ test.group('GCS driver | delete', (group) => {
 
   test('remove file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -292,7 +286,7 @@ test.group('GCS driver | delete', (group) => {
 
   test('do not error when trying to remove a non-existing file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -307,7 +301,7 @@ test.group('GCS driver | delete', (group) => {
 
   test("do not error when file parent directory doesn't exists", async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -329,7 +323,7 @@ test.group('GCS driver | copy', (group) => {
 
   test('copy file from within the disk root', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -352,7 +346,7 @@ test.group('GCS driver | copy', (group) => {
 
   test('create intermediate directories when copying a file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -377,7 +371,7 @@ test.group('GCS driver | copy', (group) => {
     assert.plan(1)
 
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -398,7 +392,7 @@ test.group('GCS driver | copy', (group) => {
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -422,7 +416,7 @@ test.group('GCS driver | copy', (group) => {
 
   test('retain source acl during copy', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -445,7 +439,7 @@ test.group('GCS driver | copy', (group) => {
 
   test('retain source content-type during copy', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -474,7 +468,7 @@ test.group('GCS driver | move', (group) => {
 
   test('move file from within the disk root', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -497,7 +491,7 @@ test.group('GCS driver | move', (group) => {
 
   test('create intermediate directories when moving a file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -522,7 +516,7 @@ test.group('GCS driver | move', (group) => {
     assert.plan(1)
 
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -543,7 +537,7 @@ test.group('GCS driver | move', (group) => {
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -567,7 +561,7 @@ test.group('GCS driver | move', (group) => {
 
   test('retain source acl during move', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -589,7 +583,7 @@ test.group('GCS driver | move', (group) => {
 
   test('retain source content-type during move', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -617,7 +611,7 @@ test.group('GCS driver | get', (group) => {
 
   test('get file contents', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -638,7 +632,7 @@ test.group('GCS driver | get', (group) => {
     assert.plan(1)
 
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -666,7 +660,7 @@ test.group('GCS driver | get', (group) => {
   test("return error when file doesn't exists", async (assert) => {
     assert.plan(1)
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -690,7 +684,7 @@ test.group('GCS driver | getStats', (group) => {
 
   test('get file stats', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -712,7 +706,7 @@ test.group('GCS driver | getStats', (group) => {
     assert.plan(1)
 
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_BUCKET,
       usingUniformAcl: true,
       driver: 'gcs' as const,
@@ -740,7 +734,7 @@ test.group('GCS driver | getVisibility', (group) => {
 
   test('get visibility for private file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -759,7 +753,7 @@ test.group('GCS driver | getVisibility', (group) => {
 
   test('get visibility for public file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -780,7 +774,7 @@ test.group('GCS driver | getVisibility', (group) => {
     assert.plan(1)
 
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -809,7 +803,7 @@ test.group('GCS driver | setVisibility', (group) => {
 
   test('set file visibility', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -831,7 +825,7 @@ test.group('GCS driver | setVisibility', (group) => {
     assert.plan(1)
 
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -859,7 +853,7 @@ test.group('GCS driver | getUrl', (group) => {
 
   test('get url to a given file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -881,7 +875,7 @@ test.group('GCS driver | getUrl', (group) => {
     assert.plan(1)
 
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -913,7 +907,7 @@ test.group('GCS driver | getSignedUrl', (group) => {
     assert.plan(2)
 
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
@@ -938,7 +932,7 @@ test.group('GCS driver | getSignedUrl', (group) => {
 
   test('define custom content headers for the file', async (assert) => {
     const config = {
-      keyFilename: GCS_KEY_FILENAME,
+      ...authenticationOptions,
       bucket: GCS_NO_UNIFORM_ACL_BUCKET,
       usingUniformAcl: false,
       driver: 'gcs' as const,
