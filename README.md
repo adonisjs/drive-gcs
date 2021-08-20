@@ -1,26 +1,53 @@
-<div align="center"><img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1564392111/adonis-banner_o9lunk.png" width="600px"></div>
-# @adonisjs/drive-gcs
-> Tagline
+<div align="center">
+  <img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1558612869/adonis-readme_zscycu.jpg" width="600px">
+</div>
 
-[![github-actions-image]][github-actions-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url]
+<br />
 
-A short brief
+<div align="center">
+  <h3>AdonisJS Drive GCS</h3>
+  <p>
+    Google cloud storage driver for AdonisJS drive.
+  </p>
+</div>
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table of contents
+<br />
 
-- [Purpose](#purpose)
-- [Features](#features)
+<div align="center">
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url] [![synk-image]][synk-url]
 
-## Purpose
+</div>
 
-## Features
+<div align="center">
+  <h3>
+    <a href="https://adonisjs.com">
+      Website
+    </a>
+    <span> | </span>
+    <a href="https://docs.adonisjs.com/guides/drive">
+      Guides
+    </a>
+    <span> | </span>
+    <a href="CONTRIBUTING.md">
+      Contributing
+    </a>
+    <span> | </span>
+    <a href="benchmarks.md">
+      Benchmarks
+    </a>
+  </h3>
+</div>
 
-[github-actions-image]: https://github.com/drive-gcs/actions/workflows/test.yml
-[github-actions-url]: https://img.shields.io/github/workflow/status/drive-gcs/test?style=for-the-badge "github-actions"
+<div align="center">
+  <sub>Built with ❤︎ by <a href="https://twitter.com/AmanVirk1">Harminder Virk</a>
+</div>
+
+[gh-workflow-image]: https://img.shields.io/github/workflow/status/adonisjs/drive-gcs/test?style=for-the-badge
+[gh-workflow-url]: https://github.com/adonisjs/drive-gcs/actions/workflows/test.yml "Github action"
+
+[typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
+[typescript-url]:  "typescript"
 
 [npm-image]: https://img.shields.io/npm/v/@adonisjs/drive-gcs.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@adonisjs/drive-gcs "npm"
@@ -28,5 +55,5 @@ A short brief
 [license-image]: https://img.shields.io/npm/l/@adonisjs/drive-gcs?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
 
-[typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
-[typescript-url]:  "typescript"
+[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/adonisjs/drive-gcs?label=Synk%20Vulnerabilities&style=for-the-badge
+[synk-url]: https://snyk.io/test/github/adonisjs/drive-gcs?targetFile=package.json "synk"
