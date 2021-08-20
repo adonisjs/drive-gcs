@@ -23,6 +23,7 @@ jobs:
         run: npm test
         env:
           GCS_KEY: ${{ secrets.GCS_KEY }}
+          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
           GCS_BUCKET: drive-gcs
           GCS_NO_UNIFORM_ACL_BUCKET: drive-gcs-no-uniform-acl
   windows:
@@ -46,5 +47,6 @@ jobs:
         run: npm test
         env:
           GCS_KEY: ${{ secrets.GCS_KEY }}
+          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
           GCS_BUCKET: drive-gcs
           GCS_NO_UNIFORM_ACL_BUCKET: drive-gcs-no-uniform-acl

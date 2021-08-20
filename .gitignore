@@ -12,3 +12,4 @@ build
 dist
 shrinkwrap.yaml
 gkey.json
+.env
