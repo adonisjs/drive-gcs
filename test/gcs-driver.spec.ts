@@ -11,11 +11,13 @@ import got from 'got'
 import test from 'japa'
 import { join } from 'path'
 import { Filesystem } from '@poppinss/dev-utils'
+import { Logger } from '@adonisjs/logger/build/index'
 import { string } from '@poppinss/utils/build/helpers'
 
 import { GcsDriver } from '../src/Drivers/Gcs'
 import { GCS_BUCKET, GCS_NO_UNIFORM_ACL_BUCKET, authenticationOptions } from '../test-helpers'
 
+const logger = new Logger({ enabled: true, name: 'adonisjs', level: 'info' })
 const fs = new Filesystem(join(__dirname, '__app'))
 
 test.group('GCS driver | put', () => {
@@ -29,7 +31,7 @@ test.group('GCS driver | put', () => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.getUrl(fileName)
@@ -50,7 +52,7 @@ test.group('GCS driver | put', () => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const contents = await driver.get(fileName)
@@ -69,7 +71,7 @@ test.group('GCS driver | put', () => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
     await driver.put(fileName, 'hi world')
 
@@ -89,7 +91,7 @@ test.group('GCS driver | put', () => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, '{ "hello": "world" }', {
       contentType: 'application/json',
@@ -117,7 +119,7 @@ test.group('GCS driver | putStream', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await fs.add('foo.txt', 'hello stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
     await driver.putStream(fileName, stream)
@@ -138,7 +140,7 @@ test.group('GCS driver | putStream', (group) => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await fs.add('foo.txt', 'hello stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
     await driver.putStream(fileName, stream)
@@ -159,7 +161,7 @@ test.group('GCS driver | putStream', (group) => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await fs.add('foo.txt', 'hi stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
     await driver.put(fileName, 'hello world')
@@ -181,7 +183,7 @@ test.group('GCS driver | putStream', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await fs.add('foo.txt', '{ "hello": "world" }')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
     await driver.putStream(fileName, stream, {
@@ -206,7 +208,7 @@ test.group('GCS driver | exists', () => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'bar')
     assert.isTrue(await driver.exists(fileName))
@@ -224,7 +226,7 @@ test.group('GCS driver | exists', () => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     assert.isFalse(await driver.exists(fileName))
   }).timeout(0)
 
@@ -238,7 +240,7 @@ test.group('GCS driver | exists', () => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     assert.isFalse(await driver.exists(fileName))
   }).timeout(0)
 
@@ -253,7 +255,7 @@ test.group('GCS driver | exists', () => {
       visibility: 'private' as const,
     }
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     try {
       await driver.exists('bar/baz/foo.txt')
     } catch (error) {
@@ -277,7 +279,7 @@ test.group('GCS driver | delete', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'bar')
     await driver.delete(fileName)
 
@@ -294,7 +296,7 @@ test.group('GCS driver | delete', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.delete(fileName)
     assert.isFalse(await driver.exists(fileName))
   }).timeout(0)
@@ -309,7 +311,7 @@ test.group('GCS driver | delete', (group) => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.delete(fileName)
     assert.isFalse(await driver.exists(fileName))
@@ -332,7 +334,7 @@ test.group('GCS driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.copy(fileName, fileName1)
@@ -355,7 +357,7 @@ test.group('GCS driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.copy(fileName, fileName1)
@@ -378,7 +380,7 @@ test.group('GCS driver | copy', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     try {
       await driver.copy('foo.txt', 'bar.txt')
@@ -401,7 +403,7 @@ test.group('GCS driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.put(fileName1, 'hi world')
@@ -425,7 +427,7 @@ test.group('GCS driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world', { visibility: 'public' })
     await driver.copy(fileName, fileName1)
@@ -448,7 +450,7 @@ test.group('GCS driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world', { contentType: 'application/json' })
     await driver.copy(fileName, fileName1)
@@ -477,7 +479,7 @@ test.group('GCS driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.move(fileName, fileName1)
@@ -500,7 +502,7 @@ test.group('GCS driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.move(fileName, fileName1)
@@ -523,7 +525,7 @@ test.group('GCS driver | move', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     try {
       await driver.move('foo.txt', 'baz/bar.txt')
@@ -546,7 +548,7 @@ test.group('GCS driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.put(fileName1, 'hi world')
@@ -570,7 +572,7 @@ test.group('GCS driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world', { visibility: 'public' })
     await driver.move(fileName, fileName1)
@@ -592,7 +594,7 @@ test.group('GCS driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     await driver.put(fileName, 'hello world', { contentType: 'application/json' })
     await driver.move(fileName, fileName1)
@@ -619,7 +621,7 @@ test.group('GCS driver | get', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const contents = await driver.get(fileName)
@@ -640,7 +642,7 @@ test.group('GCS driver | get', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const stream = await driver.getStream(fileName)
@@ -667,7 +669,7 @@ test.group('GCS driver | get', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
 
     try {
       await driver.get('foo.txt')
@@ -692,7 +694,7 @@ test.group('GCS driver | getStats', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const stats = await driver.getStats(fileName)
@@ -713,7 +715,7 @@ test.group('GCS driver | getStats', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     const fileName = `${string.generateRandom(10)}.txt`
 
     try {
@@ -742,7 +744,7 @@ test.group('GCS driver | getVisibility', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const visibility = await driver.getVisibility(fileName)
@@ -761,7 +763,7 @@ test.group('GCS driver | getVisibility', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const visibility = await driver.getVisibility(fileName)
@@ -781,7 +783,7 @@ test.group('GCS driver | getVisibility', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     const fileName = `${string.generateRandom(10)}.txt`
 
     try {
@@ -811,7 +813,7 @@ test.group('GCS driver | setVisibility', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
     assert.equal(await driver.getVisibility(fileName), 'private')
 
@@ -832,7 +834,7 @@ test.group('GCS driver | setVisibility', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     const fileName = `${string.generateRandom(10)}.txt`
 
     try {
@@ -861,7 +863,7 @@ test.group('GCS driver | getUrl', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const url = await driver.getUrl(fileName)
@@ -883,7 +885,7 @@ test.group('GCS driver | getUrl', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const url = await driver.getUrl(fileName)
@@ -915,7 +917,7 @@ test.group('GCS driver | getSignedUrl', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     try {
@@ -940,7 +942,7 @@ test.group('GCS driver | getSignedUrl', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new GcsDriver(config)
+    const driver = new GcsDriver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const signedUrl = await driver.getSignedUrl(fileName, {

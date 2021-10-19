@@ -29,6 +29,7 @@ import {
 import { promisify } from 'util'
 import { pipeline } from 'stream'
 import { string } from '@poppinss/utils/build/helpers'
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { Storage, Bucket, GetSignedUrlConfig, File } from '@google-cloud/storage'
 
 const pipelinePromise = promisify(pipeline)
@@ -59,7 +60,7 @@ export class GcsDriver implements GcsDriverContract {
    */
   private aclPublicRole = 'READER'
 
-  constructor(private config: GcsDriverConfig) {
+  constructor(private config: GcsDriverConfig, private logger: LoggerContract) {
     this.adapter = new Storage(this.config)
     this.bucket = this.adapter.bucket(this.config.bucket)
   }
@@ -109,6 +110,7 @@ export class GcsDriver implements GcsDriverContract {
       }
     }
 
+    this.logger.trace(adapterOptions, '@drive/gcs write options')
     return adapterOptions
   }
 
@@ -126,6 +128,7 @@ export class GcsDriver implements GcsDriverContract {
       contentHeaders['responseDisposition'] = contentDisposition
     }
 
+    this.logger.trace(contentHeaders, '@drive/gcs content headers')
     return contentHeaders
   }
 
