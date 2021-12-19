@@ -13,3 +13,4 @@ dist
 shrinkwrap.yaml
 gkey.json
 .env
+package-lock.json
