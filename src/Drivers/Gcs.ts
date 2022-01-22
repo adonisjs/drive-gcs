@@ -247,7 +247,6 @@ export class GcsDriver implements GcsDriverContract {
       })
       return url
     } catch (error) {
-      console.log(error)
       throw CannotGetMetaDataException.invoke(location, 'signedUrl', error)
     }
   }
