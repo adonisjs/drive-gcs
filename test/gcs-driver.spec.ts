@@ -7,18 +7,25 @@
  * file that was distributed with this source code.
  */
 
+import 'reflect-metadata'
 import got from 'got'
 import test from 'japa'
 import { join } from 'path'
-import { Filesystem } from '@poppinss/dev-utils'
+import supertest from 'supertest'
+import { createServer } from 'http'
 import { Logger } from '@adonisjs/logger/build/index'
 import { string } from '@poppinss/utils/build/helpers'
 
 import { GcsDriver } from '../src/Drivers/Gcs'
-import { GCS_BUCKET, GCS_NO_UNIFORM_ACL_BUCKET, authenticationOptions } from '../test-helpers'
+import {
+  fs,
+  GCS_BUCKET,
+  setupApplication,
+  authenticationOptions,
+  GCS_NO_UNIFORM_ACL_BUCKET,
+} from '../test-helpers'
 
 const logger = new Logger({ enabled: true, name: 'adonisjs', level: 'info' })
-const fs = new Filesystem(join(__dirname, '__app'))
 
 test.group('GCS driver | put', () => {
   test('write file to the destination', async (assert) => {
@@ -195,6 +202,102 @@ test.group('GCS driver | putStream', (group) => {
 
     await driver.delete(fileName)
   }).timeout(0)
+})
+
+test.group('GCS driver | multipartStream', (group) => {
+  group.afterEach(async () => {
+    await fs.cleanup()
+  })
+
+  test('write file to the destination', async (assert) => {
+    const config = {
+      ...authenticationOptions,
+      bucket: GCS_BUCKET,
+      usingUniformAcl: true,
+      driver: 'gcs' as const,
+      visibility: 'private' as const,
+    }
+    const fileName = `${string.generateRandom(10)}.json`
+
+    const driver = new GcsDriver(config, logger)
+
+    const app = await setupApplication()
+    const Route = app.container.resolveBinding('Adonis/Core/Route')
+    const Server = app.container.resolveBinding('Adonis/Core/Server')
+
+    Server.middleware.register([
+      async () => {
+        return {
+          default: app.container.resolveBinding('Adonis/Core/BodyParser'),
+        }
+      },
+    ])
+
+    Route.post('/', async ({ request }) => {
+      request.multipart.onFile('package', {}, async (part, reportChunk) => {
+        part.pause()
+        part.on('data', reportChunk)
+        await driver.putStream(fileName, part)
+      })
+
+      await request.multipart.process()
+    })
+
+    Server.optimize()
+
+    const server = createServer(Server.handle.bind(Server))
+    await supertest(server).post('/').attach('package', join(__dirname, '..', 'package.json'))
+
+    const contents = await driver.get(fileName)
+    assert.equal(
+      contents.toString(),
+      await fs.fsExtra.readFile(join(__dirname, '..', 'package.json'), 'utf-8')
+    )
+
+    await driver.delete(fileName)
+  }).timeout(6000)
+
+  test('cleanup stream when validation fails', async (assert) => {
+    const config = {
+      ...authenticationOptions,
+      bucket: GCS_BUCKET,
+      usingUniformAcl: true,
+      driver: 'gcs' as const,
+      visibility: 'private' as const,
+    }
+    const fileName = `${string.generateRandom(10)}.json`
+
+    const driver = new GcsDriver(config, logger)
+    const app = await setupApplication()
+    const Route = app.container.resolveBinding('Adonis/Core/Route')
+    const Server = app.container.resolveBinding('Adonis/Core/Server')
+
+    Server.middleware.register([
+      async () => {
+        return {
+          default: app.container.resolveBinding('Adonis/Core/BodyParser'),
+        }
+      },
+    ])
+
+    Route.post('/', async ({ request }) => {
+      request.multipart.onFile('package', { extnames: ['png'] }, async (part, reportChunk) => {
+        part.pause()
+        part.on('data', reportChunk)
+        await driver.putStream(fileName, part)
+      })
+
+      await request.multipart.process()
+      assert.isTrue(request.file('package')?.hasErrors)
+    })
+
+    Server.optimize()
+
+    const server = createServer(Server.handle.bind(Server))
+    await supertest(server).post('/').attach('package', join(__dirname, '..', 'package.json'))
+
+    await driver.delete(fileName)
+  }).timeout(6000)
 })
 
 test.group('GCS driver | exists', () => {
