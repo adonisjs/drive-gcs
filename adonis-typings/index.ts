@@ -27,6 +27,12 @@ declare module '@ioc:Adonis/Core/Drive' {
   export interface GcsDriverContract extends DriverContract {
     name: 'gcs'
     adapter: Storage
+
+    /**
+     * Returns a new instance of the GCS driver with
+     * a custom runtime bucket
+     */
+    bucket(bucket: string): GcsDriverContract
   }
 
   interface DriversList {

@@ -109,6 +109,27 @@ test.group('GCS driver | put', () => {
 
     await driver.delete(fileName)
   }).timeout(0)
+
+  test('switch bucket at runtime', async (assert) => {
+    const config = {
+      ...authenticationOptions,
+      bucket: 'foo',
+      usingUniformAcl: true,
+      driver: 'gcs' as const,
+      visibility: 'private' as const,
+    }
+    const fileName = `${string.generateRandom(10)}.txt`
+
+    const driver = new GcsDriver(config, logger)
+
+    await driver.bucket(GCS_BUCKET).put(fileName, 'hello world')
+    await driver.bucket(GCS_BUCKET).getUrl(fileName)
+
+    const contents = await driver.bucket(GCS_BUCKET).get(fileName)
+    assert.equal(contents.toString(), 'hello world')
+
+    await driver.bucket(GCS_BUCKET).delete(fileName)
+  }).timeout(0)
 })
 
 test.group('GCS driver | putStream', (group) => {

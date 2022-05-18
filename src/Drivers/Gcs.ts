@@ -36,9 +36,9 @@ const pipelinePromise = promisify(pipeline)
 
 export class GcsDriver implements GcsDriverContract {
   /**
-   * Reference to the bucket
+   * Reference to the GCS Bucket
    */
-  private bucket: Bucket
+  private gcsBucket: Bucket
 
   /**
    * Reference to the gcs storage instance
@@ -62,7 +62,7 @@ export class GcsDriver implements GcsDriverContract {
 
   constructor(private config: GcsDriverConfig, private logger: LoggerContract) {
     this.adapter = new Storage(this.config)
-    this.bucket = this.adapter.bucket(this.config.bucket)
+    this.gcsBucket = this.adapter.bucket(this.config.bucket)
   }
 
   /**
@@ -158,13 +158,21 @@ export class GcsDriver implements GcsDriverContract {
   }
 
   /**
+   * Returns a new instance of the GCS driver with
+   * a custom runtime bucket
+   */
+  public bucket(bucket: string): GcsDriver {
+    return new GcsDriver(Object.assign({}, this.config, { bucket }), this.logger)
+  }
+
+  /**
    * Returns the file contents as a buffer. The buffer return
    * value allows you to self choose the encoding when
    * converting the buffer to a string.
    */
   public async get(location: string): Promise<Buffer> {
     try {
-      const [file] = await this.bucket.file(location).download()
+      const [file] = await this.gcsBucket.file(location).download()
       return file
     } catch (error) {
       throw CannotReadFileException.invoke(location, error)
@@ -175,7 +183,7 @@ export class GcsDriver implements GcsDriverContract {
    * Returns the file contents as a stream
    */
   public async getStream(location: string): Promise<NodeJS.ReadableStream> {
-    return this.bucket.file(location).createReadStream()
+    return this.gcsBucket.file(location).createReadStream()
   }
 
   /**
@@ -183,7 +191,7 @@ export class GcsDriver implements GcsDriverContract {
    */
   public async exists(location: string): Promise<boolean> {
     try {
-      const [exists] = await this.bucket.file(location).exists()
+      const [exists] = await this.gcsBucket.file(location).exists()
       return exists
     } catch (error) {
       throw CannotGetMetaDataException.invoke(location, 'exists', error)
@@ -203,7 +211,7 @@ export class GcsDriver implements GcsDriverContract {
        * Therefore we fetch the object and then inspect its ACL policy
        * for all users
        */
-      const [file] = await this.bucket.file(location).get()
+      const [file] = await this.gcsBucket.file(location).get()
       return await this.getFileAcl(file)
     } catch (error) {
       throw CannotGetMetaDataException.invoke(location, 'visibility', error)
@@ -215,7 +223,7 @@ export class GcsDriver implements GcsDriverContract {
    */
   public async getStats(location: string): Promise<DriveFileStats> {
     try {
-      const [metaData] = await this.bucket.file(location).getMetadata()
+      const [metaData] = await this.gcsBucket.file(location).getMetadata()
 
       return {
         modified: new Date(metaData.updated),
@@ -236,7 +244,7 @@ export class GcsDriver implements GcsDriverContract {
     options?: ContentHeaders & { expiresIn?: string | number }
   ): Promise<string> {
     try {
-      const [url] = await this.bucket.file(location).getSignedUrl({
+      const [url] = await this.gcsBucket.file(location).getSignedUrl({
         action: 'read',
         /**
          * Using v2 doesn't allow overriding content-type header
@@ -255,7 +263,7 @@ export class GcsDriver implements GcsDriverContract {
    * Returns URL to a given path
    */
   public async getUrl(location: string): Promise<string> {
-    return this.bucket.file(location).publicUrl()
+    return this.gcsBucket.file(location).publicUrl()
   }
 
   /**
@@ -268,7 +276,7 @@ export class GcsDriver implements GcsDriverContract {
     options?: WriteOptions
   ): Promise<void> {
     try {
-      await this.bucket.file(location).save(contents, {
+      await this.gcsBucket.file(location).save(contents, {
         resumable: false,
         ...this.transformWriteOptions(options),
       })
@@ -287,7 +295,7 @@ export class GcsDriver implements GcsDriverContract {
     options?: WriteOptions
   ): Promise<void> {
     try {
-      const destination = this.bucket.file(location).createWriteStream({
+      const destination = this.gcsBucket.file(location).createWriteStream({
         resumable: false,
         ...this.transformWriteOptions(options),
       })
@@ -302,7 +310,7 @@ export class GcsDriver implements GcsDriverContract {
    */
   public async setVisibility(location: string, visibility: Visibility): Promise<void> {
     try {
-      const file = this.bucket.file(location)
+      const file = this.gcsBucket.file(location)
       visibility === 'public' ? await file.makePublic() : await file.makePrivate()
     } catch (error) {
       throw CannotSetVisibilityException.invoke(location, error)
@@ -314,7 +322,7 @@ export class GcsDriver implements GcsDriverContract {
    */
   public async delete(location: string): Promise<void> {
     try {
-      await this.bucket.file(location).delete({ ignoreNotFound: true })
+      await this.gcsBucket.file(location).delete({ ignoreNotFound: true })
     } catch (error) {
       throw CannotDeleteFileException.invoke(location, error)
     }
@@ -336,7 +344,7 @@ export class GcsDriver implements GcsDriverContract {
         options.visibility = await this.getVisibility(source)
       }
 
-      await this.bucket.file(source).copy(destination, this.transformWriteOptions(options))
+      await this.gcsBucket.file(source).copy(destination, this.transformWriteOptions(options))
     } catch (error) {
       throw CannotCopyFileException.invoke(source, destination, error.original || error)
     }
