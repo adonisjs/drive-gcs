@@ -28,4 +28,11 @@ declare module '@ioc:Adonis/Core/Drive' {
     name: 'gcs'
     adapter: Storage
   }
+
+  interface DriversList {
+    gcs: {
+      implementation: GcsDriverContract
+      config: GcsDriverConfig
+    }
+  }
 }
