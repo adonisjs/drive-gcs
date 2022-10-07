@@ -225,6 +225,59 @@ test.group('GCS driver | putStream', (group) => {
   }).timeout(0)
 })
 
+test.group('S3 Drive | moveToDisk', (group) => {
+  group.afterEach(async () => {
+    await fs.cleanup()
+  })
+
+  test('upload small files', async (assert) => {
+    const config = {
+      ...authenticationOptions,
+      bucket: GCS_BUCKET,
+      usingUniformAcl: true,
+      driver: 'gcs' as const,
+      visibility: 'private' as const,
+    }
+
+    const fileName = `${string.generateRandom(10)}.txt`
+    const driver = new GcsDriver(config, logger)
+
+    const app = await setupApplication({ autoProcessMultipartFiles: true })
+    const Route = app.container.resolveBinding('Adonis/Core/Route')
+    const Server = app.container.resolveBinding('Adonis/Core/Server')
+
+    Server.middleware.register([
+      async () => {
+        return {
+          default: new (app.container.resolveBinding('Adonis/Core/BodyParser'))(app.config, {
+            use() {
+              return driver
+            },
+          }),
+        }
+      },
+    ])
+
+    Route.post('/', async ({ request }) => {
+      const file = request.file('package')!
+      await file.moveToDisk('./', {
+        name: fileName,
+      })
+    })
+
+    Server.optimize()
+
+    const server = createServer(Server.handle.bind(Server))
+    await supertest(server).post('/').attach('package', Buffer.from('hello world', 'utf-8'), {
+      filename: 'package.txt',
+    })
+
+    const [metadata] = await driver.adapter.bucket(config.bucket).file(fileName).getMetadata()
+    assert.equal(metadata.size, '11')
+    await driver.delete(fileName)
+  }).timeout(6000)
+})
+
 test.group('GCS driver | multipartStream', (group) => {
   group.afterEach(async () => {
     await fs.cleanup()
