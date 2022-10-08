@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/drive-gcs",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Google cloud storage driver for AdonisJS drive",
   "main": "build/providers/GcsProvider.js",
   "files": [
